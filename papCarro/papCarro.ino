@@ -24,19 +24,29 @@ long d2 = 0;
 int distanciaFrente = 21;
 int distanciaEsquerda = 0;
 int distanciaDireita = 0;
+// variaveis de movimento
 
+const int delay_arranque = 250;
+const int delay_visao = 350;
+const int verEsquerda = 0;
+const int verDireita = 170;
+const int verFrente = 80;
+const int chegatras = 200;
+const int distanciadet = 44;
 void setup() {
   myservo.attach(10); //o servo está ligado ao pino 10
   //velocidade();
   Serial.begin(115200);
+  myservo.write(verFrente); //ver obstáculos em frente
 }
 
 void loop() {
   distancia();
   //Serial.print(distanciaFrente);
-  if(distanciaFrente < 40){mudarDirecao();}
+  if(distanciaFrente < distanciadet){mudarDirecao();}
   else{
     andarFrente();
+    myservo.write(verFrente); //ver obstáculos em frente
     }
   velocidade();
 }
@@ -93,32 +103,43 @@ void parar(){ //parar o carro
 
 void mudarDirecao(){
   parar();
-  
-  myservo.write(170);
-  delay(500);
-  distanciaDireita = myusonic.distanceRead(CM);
-  if(distanciaDireita < 40){
+  myservo.write(verDireita); //ver obstáculos a direita
+  delay(delay_arranque);
+  distanciaDireita = myusonic.distanceRead(CM); //ler a distancia
+  if(distanciaDireita > distanciadet){
+    andarTras();
+    delay(chegatras);
     rodarDireita();
-    delay(250);
+    delay(delay_visao);
+    myservo.write(verFrente); //ver obstaculos em frente
     andarFrente();
     return;
   }
-  myservo.write(0);
-  delay(500);
+  myservo.write(verEsquerda); //ver obstáculos a esquerda
+  delay(delay_arranque);
   distanciaEsquerda = myusonic.distanceRead(CM);
-  if(distanciaEsquerda < 40){
+  if(distanciaEsquerda > distanciadet){
+    andarTras();
+    delay(chegatras);
     rodarEsquerda();
-    delay(250);
+    delay(delay_visao);
+    myservo.write(verFrente); //ver obstaculos em frente
     andarFrente();
     return;
   }
-  myservo.write(80);
-  delay(500);
+  myservo.write(verFrente); //ver obstáculos em frente
+  delay(delay_arranque);
   distanciaFrente = myusonic.distanceRead(CM);
-  if(distanciaFrente < 40){
+  if(distanciaFrente < distanciadet){
+    andarTras();
+    delay(chegatras);
     rodarEsquerda();
-    delay(750);
+    delay(delay_visao * 1);
+    myservo.write(verFrente); //ver obstaculos em frente
     andarFrente();
     return;
   }
-}
+} 
+
+
+
